@@ -1,5 +1,6 @@
 package rocks.zipcode.atm;
 
+import com.sun.tools.javadoc.DocImpl;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -47,18 +48,18 @@ public class CashMachineApp extends Application {
     // CashMachine object
     private CashMachine cashMachine = new CashMachine(new Bank());
 
+
+    //content creation for the form layout
     private Parent createContent() {
 
         // styling of the vbox display
         VBox vbox = new VBox(10);
-        vbox.setPrefSize(600, 600);
-        //vbox.setStyle("-fx-padding: 10;");
+        vbox.setPrefSize(600, 500);
         vbox.setStyle("-fx-border-style: solid inside;");
         vbox.setStyle("-fx-border-color: #12d0ff;");
         vbox.setStyle("-fx-border-width: 2;");
         vbox.setStyle("-fx-border-insets: 5;");
         vbox.setStyle("-fx-border-radius: 5");
-
 
         // set the account data fields to non-editable
         txtAcctID.setEditable(false);
@@ -67,33 +68,37 @@ public class CashMachineApp extends Application {
         txtAcctBalance.setEditable(false);
 
 
-        // All the button click actions
+// Login button click action
         btnLogin.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(fieldAcctID.getText());
                 cashMachine.login(id);
                 fieldAcctID.setStyle("-fx-border-color: #12d0ff;");
-            } catch (Exception e1) {
-                loginFailed(e1);
+            } catch (Exception error) {
+                failedAlert(error);
             }
             setFields();
         });
 
-
+// Deposit button click action
         btnDeposit.setOnAction(e -> {
-            int amount = Integer.parseInt(fieldAcctID.getText());
+            double amount = Double.parseDouble(txtAmtEntries.getText());
             cashMachine.deposit(amount);
             setFields();
         });
 
-
+// Withdraw button click action
         btnWithdraw.setOnAction(e -> {
-            int amount = Integer.parseInt(fieldAcctID.getText());
-            cashMachine.withdraw(amount);
+            try {
+                double amount = Double.parseDouble(txtAmtEntries.getText());
+                cashMachine.withdraw(amount);
+            } catch (Exception error) {
+                failedAlert(error);
+            }
             setFields();
         });
 
-
+// Logout button click action
         btnLogOut.setOnAction(e -> {
             cashMachine.exit();
             txtAcctID.setText("");
@@ -104,7 +109,7 @@ public class CashMachineApp extends Application {
             lblAmtEntries.setVisible(false);
         });
 
-// Adding children to the flowpane
+// Adding children components to the flowpane
         FlowPane flowpane = new FlowPane();
         flowpane.setPadding(new Insets(10, 10, 10, 10));
         flowpane.setAlignment(Pos.BOTTOM_CENTER);
@@ -113,36 +118,50 @@ public class CashMachineApp extends Application {
         flowpane.getChildren().add(btnWithdraw);
         flowpane.getChildren().add(btnLogOut);
 
-        vbox.getChildren().addAll(lblEnterAcct, fieldAcctID, lblAcctID, txtAcctID, lblAcctName, txtAcctName,
+        vbox.getChildren().addAll(menu(),lblEnterAcct,fieldAcctID, lblAcctID, txtAcctID, lblAcctName, txtAcctName,
                 lblEmailID, txtEmailID, lblAcctBalance, txtAcctBalance, lblAmtEntries, txtAmtEntries, flowpane);
 
         txtAmtEntries.setVisible(false);
         lblAmtEntries.setVisible(false);
+        btnDeposit.setDisable(true);
+        btnWithdraw.setDisable(true);
+        btnLogOut.setDisable(true);
 
         return vbox;
     }
 
-    public TextField getTxtAmtEntries() {
-        return txtAmtEntries;
-    }
+    //create Menu and MenuItems
+    public static MenuBar menu(){
+        //Create menu and menuitems with list of Account IDs
+        Menu acctMenu = new Menu("AccountID List");
+        MenuItem m1 = new MenuItem("1000");
+        MenuItem m2 = new MenuItem("2000");
+        MenuItem m3 = new MenuItem("3000");
+        MenuItem m4 = new MenuItem("4000");
 
-    // Alert display if users clicks on login button if no Acct ID or invalid Acct ID is entered
-    private void loginFailed(Exception exception) {
-        Platform.runLater(() -> {
-            javafx.scene.text.Text txt = new javafx.scene.text.Text(
-                    String.format("Please enter valid Account ID to Login: 1000,2000,3000 or 4000",
-                            exception.getMessage()));
-            txt.setFill(Color.RED);
+        //Add menuitems to the created Menu
+        acctMenu.getItems().add(m1);
+        acctMenu.getItems().addAll(m2);
+        acctMenu.getItems().addAll(m3);
+        acctMenu.getItems().addAll(m4);
+       // acctMenu.setStyle("-fx-background-color: #11f3ff");
 
-            FlowPane alertContent = new FlowPane(txt);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.getDialogPane().setContent(alertContent);
-            alert.showAndWait();
-            fieldAcctID.setStyle("-fx-border-color: Red;");
-            fieldAcctID.setFocusTraversable(true);
+        //create menu bar
+        MenuBar mb = new MenuBar();
+        mb.getMenus().add(acctMenu);
+        mb.setStyle("-fx-background-color: #3ecfff");
+
+        acctMenu.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
         });
+
+        return mb;
     }
 
+    // show stage
     @Override
     public void start(Stage stage) throws Exception {
         stage.setScene(new Scene(createContent()));
@@ -150,32 +169,47 @@ public class CashMachineApp extends Application {
         stage.show();
     }
 
+    // Main application launch
     public static void main(String[] args) {
         launch(args);
     }
 
+    //set the fields status and enable based on account login
     public void setFields() {
         txtAcctID.setText(cashMachine.acctID());
         txtAcctName.setText(cashMachine.acctName());
         txtEmailID.setText(cashMachine.acctEmail());
         txtAcctBalance.setText(cashMachine.acctBalance());
-        BooleanBinding boolBind = txtAcctID.textProperty().isNotEmpty() .or(txtAcctName.textProperty().isNotEmpty())
+        BooleanBinding boolBind = txtAcctID.textProperty().isNotEmpty().or(txtAcctName.textProperty().isNotEmpty())
                 .or(txtEmailID.textProperty().isNotEmpty());
-        if(boolBind.get())
-        {
+        if (boolBind.get()) {
             btnDeposit.setDisable(false);
             btnWithdraw.setDisable(false);
             btnLogOut.setDisable(false);
             txtAmtEntries.setVisible(true);
             lblAmtEntries.setVisible(true);
-        }
-        else
-        {
+        } else {
             btnDeposit.setDisable(true);
             btnWithdraw.setDisable(true);
             btnLogOut.setDisable(true);
             txtAmtEntries.setVisible(false);
             lblAmtEntries.setVisible(false);
         }
+    }
+
+    // Alert display if users clicks on login button if no Acct ID or invalid Acct ID is entered
+    private void failedAlert(Exception exception) {
+        Platform.runLater(() -> {
+            javafx.scene.text.Text txt = new javafx.scene.text.Text(
+                    String.format(exception.getMessage()));
+            //  String.format("Please enter valid Account ID to Login: 1000,2000,3000 or 4000",
+            //        exception.getMessage()));
+            txt.setFill(Color.RED);
+            FlowPane alertContent = new FlowPane(txt);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.getDialogPane().setContent(alertContent);
+            alert.showAndWait();
+            // fieldAcctID.setStyle("-fx-border-color: Red;");
+        });
     }
 }

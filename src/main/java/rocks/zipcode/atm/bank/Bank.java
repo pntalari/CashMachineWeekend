@@ -42,14 +42,14 @@ public class Bank {
         }
     }
 
-    public ActionResult<AccountData> deposit(AccountData accountData, int amount) {
+    public ActionResult<AccountData> deposit(AccountData accountData, double amount) {
         Account account = accounts.get(accountData.getId());
         account.deposit(amount);
 
         return ActionResult.success(account.getAccountData());
     }
 
-    public ActionResult<AccountData> withdraw(AccountData accountData, int amount) {
+    public ActionResult<AccountData> withdraw(AccountData accountData, double amount) {
         Account account = accounts.get(accountData.getId());
         boolean ok = account.withdraw(amount);
 
@@ -58,10 +58,10 @@ public class Bank {
         }
         else if (account != null && account.getBalance()<=0)
         {
-            return ActionResult.fail("Account" + accountData.getId() + "balance is below 0. \nPlease deposit before withdrawal!");
+            return ActionResult.fail("Account " + accountData.getId() + "$ balance is below 0$. \nPlease deposit before withdrawal!");
         }
         else {
-            return ActionResult.fail("Withdraw failed: " + amount + ". Account has: " + account.getBalance());
+            return ActionResult.fail("Withdraw failed: " + amount + "$. Account has: " + account.getBalance()+"$");
         }
     }
 

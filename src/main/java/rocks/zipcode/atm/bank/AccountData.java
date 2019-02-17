@@ -9,9 +9,9 @@ public final class AccountData {
     private final String name;
     private final String email;
 
-    private final int balance;
+    private final double balance;
 
-    AccountData(int id, String name, String email, int balance) {
+    AccountData(int id, String name, String email, double balance) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -30,7 +30,7 @@ public final class AccountData {
         return email;
     }
 
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
 
