@@ -123,6 +123,9 @@ public class CashMachineApp extends Application {
 
         txtAmtEntries.setVisible(false);
         lblAmtEntries.setVisible(false);
+        btnDeposit.setDisable(true);
+        btnWithdraw.setDisable(true);
+        btnLogOut.setDisable(true);
 
         return vbox;
     }

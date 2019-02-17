@@ -58,10 +58,10 @@ public class Bank {
         }
         else if (account != null && account.getBalance()<=0)
         {
-            return ActionResult.fail("Account" + accountData.getId() + "balance is below 0. \nPlease deposit before withdrawal!");
+            return ActionResult.fail("Account " + accountData.getId() + "$ balance is below 0$. \nPlease deposit before withdrawal!");
         }
         else {
-            return ActionResult.fail("Withdraw failed: " + amount + ". Account has: " + account.getBalance());
+            return ActionResult.fail("Withdraw failed: " + amount + "$. Account has: " + account.getBalance()+"$");
         }
     }
 
