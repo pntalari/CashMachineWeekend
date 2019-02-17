@@ -50,16 +50,33 @@ public class CashMachine {
     public void exit() {
         if (accountData != null) {
             accountData = null;
+
         }
     }
 
     @Override
-    public String toString() {
-        return accountData != null ? accountData.toString() : "Try account 1000 or 2000 and click submit.";
+    public String toString() { ;
+        return accountData != null ? accountData.toString() : "Try account 1000, 2000, 3000 or 4000 and click submit.";
+    }
+
+    public String acctID(){
+        return Integer.toString(accountData.getId());
+    }
+
+    public String acctName(){
+        return accountData.getName();
+    }
+
+    public String acctEmail(){
+        return accountData.getEmail();
+    }
+
+    public String acctBalance(){
+        return Integer.toString(accountData.getBalance());
     }
 
     private <T> void tryCall(Supplier<ActionResult<T> > action, Consumer<T> postAction) {
-        try {
+       // try {
             ActionResult<T> result = action.get();
             if (result.isSuccess()) {
                 T data = result.getData();
@@ -67,9 +84,10 @@ public class CashMachine {
             } else {
                 String errorMessage = result.getErrorMessage();
                 throw new RuntimeException(errorMessage);
+
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+       // } catch (Exception e) {
+         //   System.out.println("Error: " + e.getMessage());
         }
     }
-}
+
